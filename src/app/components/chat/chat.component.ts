@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component , OnInit} from '@angular/core';
 import { ChatService } from '../../providers/chat.service';
 
 
@@ -7,12 +7,28 @@ import { ChatService } from '../../providers/chat.service';
   templateUrl: './chat.component.html',
   styles: []
 })
-export class ChatComponent  {
+export class ChatComponent implements OnInit {
 
+  elemento:any;
   mensaje:string = "";
+
   constructor( public cs:ChatService) {
 
-    this.cs.cargarMensajes().subscribe()
+// lo que está dentro del subscribe es para que el scroll siempre esté al final
+// del chat y se le pone timeout para esperar que angular renderice
+    this.cs.cargarMensajes()
+           .subscribe( ()=>{
+            setTimeout(()=>{
+              this.elemento.scrollTop = this.elemento.scrollHeight;
+
+            },20);
+    })
+  }
+
+
+  ngOnInit(){
+
+    this.elemento = document.getElementById('app-mensajes');
   }
 
   enviarMensaje(){
@@ -29,7 +45,7 @@ export class ChatComponent  {
                     console.log("mensaje enviado");
                     this.mensaje = "";
                   })
-                  
+
            .catch((err)=>console.log(err))
  }
 
